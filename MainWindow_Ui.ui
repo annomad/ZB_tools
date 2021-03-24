@@ -89,7 +89,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+         <widget class="QTreeView" name="dir_treeView"/>
         </item>
        </layout>
       </widget>

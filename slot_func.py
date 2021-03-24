@@ -11,19 +11,18 @@ class Slotfunc(MainWindow):  #继承主窗口的类
     # 自动绑定信号和槽函数，点击"打开资料库"打开目录选择窗口
     @pyqtSlot()
     def on_openResource_clicked(self):
-        self.opendirwin = OpenDirWin()
-        self.opendirwin.show()
-        # self.opendirwin.setWindowFlags()# 打开窗口，并设置了独占窗口
+        #fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./","All Files (*);;Excel Files (*.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
 
-    # @pyqtSlot(
-    # def on_openResourceWinOk_clicked(self):    #查询窗口的确定按钮
-    #     print('运行到这一步了么')
-    #     _signal = pyqtSignal(dir_str)
-    #
-    #     dir_str = self.labelopendir.text()
-    #
-    #     self._signal.emit(dir_str)
-    #     self.opendir_win.close
+        dir_path = QFileDialog.getExistingDirectory(self, "选取文件", "./") #打开目录
+        print(dir_path)
+
+        self.dir_model = QFileSystemModel()
+        # 进行筛选只显示文件夹，不显示文件和特色文件
+        # self.dir_model.setFilter(QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
+        self.dir_model.setRootPath(dir_path)  #设置好路径
+        self.dir_treeView.setModel(self.dir_model)  #显示里面的内容
+
+
 
 
 
