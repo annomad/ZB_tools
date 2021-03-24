@@ -1,4 +1,4 @@
-from  PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
+from  PyQt5.QtWidgets import *
 from  PyQt5.uic import loadUi
 
 
@@ -6,6 +6,15 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         loadUi('MainWindow_Ui.ui', self)    #导入ui界面设计，传递给MainWindow。 继承了Qmainwindow。
+        self.setWindowTitle('招投标制作工具')
+
+class OpenDirWin(QDialog):
+    def __init__(self):
+        super(OpenDirWin, self).__init__()
+        loadUi('open_dir.ui', self)
+        self.setWindowTitle('打开资源库')
+
+
 
 
 

@@ -11,7 +11,7 @@ if __name__ == '__main__':
  #思路直接用loadUi形成窗口类MainWindow（），在用slotfunc（）继承MainWindow（）类，并改写。
  # 这样的好处就是把槽函数和Ui函数惯例。
  from  slot_func import  Slotfunc
- mywindow = Slotfunc() #实例化
+ mywindow = Slotfunc() #以按键为线索的类给他实例化
 
 
  mywindow.show()
