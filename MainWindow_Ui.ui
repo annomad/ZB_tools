@@ -6,22 +6,37 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>881</width>
-    <height>838</height>
+    <width>1920</width>
+    <height>965</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="QSplitter" name="splitter">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
+      <property name="handleWidth">
+       <number>2</number>
+      </property>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
@@ -75,18 +90,61 @@
       </widget>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetNoConstraint</enum>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
-         <widget class="QPushButton" name="openResource">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="openResource">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>打开资料库</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="dispay_dir_path">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="spacing">
+           <number>1</number>
           </property>
-          <property name="text">
-           <string>打开资料库</string>
+          <property name="leftMargin">
+           <number>6</number>
           </property>
-         </widget>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="lineEdit"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_3">
+            <property name="text">
+             <string>检索</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QTreeView" name="dir_treeView"/>
@@ -100,6 +158,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
       </widget>
      </widget>
     </item>
@@ -110,7 +171,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>881</width>
+     <width>1920</width>
      <height>24</height>
     </rect>
    </property>
@@ -119,7 +180,13 @@
      <string>文件</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>编辑</string>
+    </property>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
