@@ -13,14 +13,17 @@ class Slotfunc(MainWindow):  #继承主窗口的类
     def on_openResource_clicked(self):
         #fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./","All Files (*);;Excel Files (*.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
 
-        dir_path = QFileDialog.getExistingDirectory(self, "选取文件", "./") #打开目录
+        dir_path = QFileDialog.getExistingDirectory(self, "选取文件夹", "./") #打开目录
         print(dir_path)
 
-        self.dir_model = QFileSystemModel()
+        dir_model = QDirModel()
         # 进行筛选只显示文件夹，不显示文件和特色文件
         # self.dir_model.setFilter(QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
-        self.dir_model.setRootPath(dir_path)  #设置好路径
-        self.dir_treeView.setModel(self.dir_model)  #显示里面的内容
+        self.dir_treeView.setModel(dir_model)
+        print(self.dir_treeView)
+        # dir_model.setRootIndex(dir_path)
+        self.dir_treeView.setModel(dir_model)  #显示里面的内容
+
 
 
 
