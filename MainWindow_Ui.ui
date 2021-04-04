@@ -123,7 +123,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>打开资料库</string>
+             <string>资料库</string>
             </property>
            </widget>
           </item>
@@ -169,7 +169,7 @@
            <widget class="QLineEdit" name="search_lineedit"/>
           </item>
           <item>
-           <widget class="QPushButton" name="search_button">
+           <widget class="QPushButton" name="searchbutton">
             <property name="text">
              <string>检索</string>
             </property>
@@ -249,4 +249,7 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>searchbutton()</slot>
+ </slots>
 </ui>
