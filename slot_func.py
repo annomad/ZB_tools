@@ -73,6 +73,8 @@ class Slotfunc(MainWindow):  #继承主窗口的类
         # print(self.dir_model.fileInfo(qmodel_index))  # 打印双击对象的类型
         if not self.dir_model.fileInfo(qmodel_index).isDir(): # 如果不是目录，则告知这是一个文件
             print('这是一个文件')
+        else:
+            print('这是一个文件夹或其他')
 
 
 
