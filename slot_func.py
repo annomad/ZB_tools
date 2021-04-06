@@ -44,7 +44,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
 
     # @pyqtSlot()
     def searchbutton_func(self):  # 搜索按钮功能键
-        self.Alert_animation(self.search_lineedit) ##############################################
+        # self.Alert_animation(self.search_lineedit) # 装在一个动画警示
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
         self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
         # self.research_func()    # 先检查下搜索框是否是空值，如果是空值，则禁用名称过滤  有待商榷？
@@ -90,14 +90,17 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     def Alert_animation(self, kongjian):  # 做一个警示动画，做一些重要的提醒
         x = kongjian.geometry().x()# 获得坐标和y值
         y = kongjian.geometry().y()# 获得坐标和y值
+        w = kongjian.geometry().width()# 获得坐标和w值
+        h = kongjian.geometry().height()# 获得坐标和h值
         print("输出x坐标为 ,y坐标为d", x, y)
-        animation1 = QPropertyAnimation(kongjian, b'pos', self)    #geometry是坐标+大小，pos是坐标
-
-        animation1.setKeyValueAt(0, QPoint(x+10, y+1))
-        animation1.setKeyValueAt(0.25, QPoint(x-10, y-1))
-        animation1.setKeyValueAt(0.5, QPoint(x+5, y+1))
-        animation1.setKeyValueAt(0.75, QPoint(x-5, y-1))
-        animation1.setKeyValueAt(1, QPoint(x, y))
-        animation1.setDuration(1000)
+        animation1 = QPropertyAnimation(kongjian, b'geometry', self)    #geometry是坐标+大小，pos是坐标
+        animation1.setKeyValueAt(0, QRect(x+0, y, w, h))    # 此处有bug ， 第二次执行会让变量增加。
+        animation1.setKeyValueAt(0.3, QRect(x-20, y, w-3, h))
+        animation1.setKeyValueAt(0.5, QRect(x+20, y, w+5, h))
+        animation1.setKeyValueAt(0.65, QRect(x-20, y, w-5, h))
+        animation1.setKeyValueAt(0.80, QRect(x+10, y, w+3, h))
+        animation1.setKeyValueAt(0.90, QRect(x-10, y, w-3, h))
+        animation1.setKeyValueAt(0.95, QRect(x+5, y, w+4, h))
+        animation1.setKeyValueAt(1, QRect(x, y, w, h))
+        animation1.setDuration(400)
         animation1.start()
-        print('动画出现了么')
