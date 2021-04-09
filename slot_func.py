@@ -9,6 +9,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     def __init__(self):
         super().__init__()
 
+
         self.search_lineedit.returnPressed.connect(self.searchbutton_func)  # 回车信号，链接搜索函数
         self.search_lineedit.editingFinished.connect(self.research_func)  # 结束编辑，重新展示函数
         self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
@@ -26,6 +27,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     # 自动绑定信号和槽函数，点击"打开资料库"打开目录选择窗口
     @pyqtSlot()
     def on_openResource_clicked(self):  # 打开资源库按钮
+
         # fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./","All Files (*);;Excel Files (*.xls)")
         # 设置文件扩展名过滤,注意用双分号间隔
         self.dir_path = QFileDialog.getExistingDirectory(self, "选取文件夹", "./")  # 打开目录
@@ -44,7 +46,8 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
 
     # @pyqtSlot()
     def searchbutton_func(self):  # 搜索按钮功能键
-        # self.Alert_animation(self.search_lineedit) # 装在一个动画警示
+
+        self.Alert_animation(self.search_lineedit) # 装在一个动画警示
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
         self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
         # self.research_func()    # 先检查下搜索框是否是空值，如果是空值，则禁用名称过滤  有待商榷？
@@ -95,12 +98,13 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         print("输出x坐标为 ,y坐标为d", x, y)
         animation1 = QPropertyAnimation(kongjian, b'geometry', self)    #geometry是坐标+大小，pos是坐标
         animation1.setKeyValueAt(0, QRect(x+0, y, w, h))    # 此处有bug ， 第二次执行会让变量增加。
-        animation1.setKeyValueAt(0.3, QRect(x-20, y, w-3, h))
-        animation1.setKeyValueAt(0.5, QRect(x+20, y, w+5, h))
-        animation1.setKeyValueAt(0.65, QRect(x-20, y, w-5, h))
-        animation1.setKeyValueAt(0.80, QRect(x+10, y, w+3, h))
-        animation1.setKeyValueAt(0.90, QRect(x-10, y, w-3, h))
-        animation1.setKeyValueAt(0.95, QRect(x+5, y, w+4, h))
+        animation1.setKeyValueAt(0.2, QRect(x-20, y, w, h))
+        animation1.setKeyValueAt(0.4, QRect(x+20, y, w, h))
+        animation1.setKeyValueAt(0.65, QRect(x-20, y, w, h))
+        animation1.setKeyValueAt(0.80, QRect(x+20, y, w, h))
+        animation1.setKeyValueAt(0.90, QRect(x-20, y, w, h))
+        animation1.setKeyValueAt(0.95, QRect(x+20, y, w, h))
         animation1.setKeyValueAt(1, QRect(x, y, w, h))
         animation1.setDuration(400)
         animation1.start()
+
