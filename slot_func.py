@@ -89,7 +89,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             self.dir_model.setNameFilters([])
         pass  # 拟开启资料库搜索功能
 
-    def Alert_animation(self, kongjian):  # 做一个警示动画，做一些重要的提醒
+    def Alert_animation(self, kongjian):  # 做一个警示动画类，做一些重要的提醒
         x = kongjian.geometry().x()     # 获得坐标和y值
         y = kongjian.geometry().y()     # 获得坐标和y值
         w = kongjian.geometry().width()     # 获得坐标和w值
