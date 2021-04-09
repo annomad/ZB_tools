@@ -154,3 +154,4 @@ class Ui_MainWindow(object):
         self.menu.setTitle(_translate("MainWindow", "文件"))
         self.menu_2.setTitle(_translate("MainWindow", "编辑"))
 
+

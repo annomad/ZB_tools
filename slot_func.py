@@ -9,8 +9,8 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     def __init__(self):
         super().__init__()
 
-
         self.search_lineedit.returnPressed.connect(self.searchbutton_func)  # 回车信号，链接搜索函数
+        # self.search_lineedit.textChanged.connect(self.searchbutton_func)  # 内容改变信号，链接搜索函数
         self.search_lineedit.editingFinished.connect(self.research_func)  # 结束编辑，重新展示函数
         self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
         self.dir_treeView.doubleClicked.connect(self.opendocs_func)  # 你编写打开doc文档功能
@@ -18,7 +18,6 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
         self.dir_model = QFileSystemModel(self)  # 实例化一个QfilesystemModel
-
 
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
@@ -47,7 +46,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     # @pyqtSlot()
     def searchbutton_func(self):  # 搜索按钮功能键
 
-        self.Alert_animation(self.search_lineedit) # 装在一个动画警示
+        self.Alert_animation(self.search_lineedit)  # 装在一个动画警示
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
         self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
         # self.research_func()    # 先检查下搜索框是否是空值，如果是空值，则禁用名称过滤  有待商榷？
@@ -91,19 +90,19 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         pass  # 拟开启资料库搜索功能
 
     def Alert_animation(self, kongjian):  # 做一个警示动画，做一些重要的提醒
-        x = kongjian.geometry().x()# 获得坐标和y值
-        y = kongjian.geometry().y()# 获得坐标和y值
-        w = kongjian.geometry().width()# 获得坐标和w值
-        h = kongjian.geometry().height()# 获得坐标和h值
+        x = kongjian.geometry().x()     # 获得坐标和y值
+        y = kongjian.geometry().y()     # 获得坐标和y值
+        w = kongjian.geometry().width()     # 获得坐标和w值
+        h = kongjian.geometry().height()        # 获得坐标和h值
         print("输出x坐标为 ,y坐标为d", x, y)
-        animation1 = QPropertyAnimation(kongjian, b'geometry', self)    #geometry是坐标+大小，pos是坐标
+        animation1 = QPropertyAnimation(kongjian, b'geometry', self)    # geometry是坐标+大小，pos是坐标
         animation1.setKeyValueAt(0, QRect(x+0, y, w, h))    # 此处有bug ， 第二次执行会让变量增加。
-        animation1.setKeyValueAt(0.2, QRect(x-20, y, w, h))
-        animation1.setKeyValueAt(0.4, QRect(x+20, y, w, h))
-        animation1.setKeyValueAt(0.65, QRect(x-20, y, w, h))
-        animation1.setKeyValueAt(0.80, QRect(x+20, y, w, h))
-        animation1.setKeyValueAt(0.90, QRect(x-20, y, w, h))
-        animation1.setKeyValueAt(0.95, QRect(x+20, y, w, h))
+        animation1.setKeyValueAt(0.2, QRect(x-10, y, w, h))
+        animation1.setKeyValueAt(0.4, QRect(x+10, y, w, h))
+        animation1.setKeyValueAt(0.65, QRect(x-10, y, w, h))
+        animation1.setKeyValueAt(0.80, QRect(x+10, y, w, h))
+        animation1.setKeyValueAt(0.90, QRect(x-10, y, w, h))
+        animation1.setKeyValueAt(0.95, QRect(x+10, y, w, h))
         animation1.setKeyValueAt(1, QRect(x, y, w, h))
         animation1.setDuration(400)
         animation1.start()
