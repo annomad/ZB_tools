@@ -3,6 +3,7 @@ from MainWindow import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import *
+import docx
 
 
 class Slotfunc(MainWindow):  # 继承主窗口的类
@@ -46,7 +47,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     # @pyqtSlot()
     def searchbutton_func(self):  # 搜索按钮功能键
 
-        self.Alert_animation(self.search_lineedit)  # 装在一个动画警示
+        self.Alert_animation(self.search_lineedit)  # 装在一个动画警示？
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
         self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
         # self.research_func()    # 先检查下搜索框是否是空值，如果是空值，则禁用名称过滤  有待商榷？
@@ -82,6 +83,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # print(self.dir_model.fileInfo(qmodel_index))  # 打印双击对象的类型
         if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
             print('这是一个文件')
+            self.Docxviewer(self.dir_model.filePath(qmodel_index))
 
     def research_func(self):  # 非空重搜索
         if self.search_lineedit.text() == '':
@@ -106,4 +108,15 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         animation1.setKeyValueAt(1, QRect(x, y, w, h))
         animation1.setDuration(400)
         animation1.start()
+
+    # 这是docx展示的功能：右侧大框里显示内容的功能
+    def Docxviewer(self, filepath):
+        try:
+            file = docx.Document(filepath)
+            self.plainviewer.clear()    # 清空文本
+            for p in file.paragraphs:
+                print(p.text)
+                self.plainviewer.appendPlainText(p.text)  # 显示doc内容
+        except :
+            print('这是个非docx文件')
 
