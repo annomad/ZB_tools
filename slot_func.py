@@ -106,10 +106,11 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         animation1.setKeyValueAt(0.90, QRect(x-10, y, w, h))
         animation1.setKeyValueAt(0.95, QRect(x+10, y, w, h))
         animation1.setKeyValueAt(1, QRect(x, y, w, h))
-        animation1.setDuration(400)
-        animation1.start()
+        animation1.setDuration(300)  # 设置间隔
+        animation1.setLoopCount(2)  # 重复3次
+        animation1.start(QAbstractAnimation.DeleteWhenStopped)       # 动画完毕后删除动画
 
-    # 这是docx展示的功能：右侧大框里显示内容的功能
+        # 这是docx展示的功能：右侧大框里显示内容的功能
     def Docxviewer(self, filepath):
         try:
             file = docx.Document(filepath)
@@ -119,4 +120,10 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
                 self.plainviewer.appendPlainText(p.text)  # 显示doc内容
         except :
             print('这是个非docx文件')
+
+
+    #搜索 列举目标文件。
+    def SearchList(self):
+        pass
+
 

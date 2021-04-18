@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1440, 847)
+        MainWindow.resize(1440, 785)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -115,15 +115,15 @@ class Ui_MainWindow(object):
         self.dir_treeView.setMinimumSize(QtCore.QSize(1, 0))
         self.dir_treeView.setObjectName("dir_treeView")
         self.verticalLayout_2.addWidget(self.dir_treeView)
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.splitter)
+        self.plainviewer = QtWidgets.QPlainTextEdit(self.splitter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(2)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.plainTextEdit.sizePolicy().hasHeightForWidth())
-        self.plainTextEdit.setSizePolicy(sizePolicy)
-        self.plainTextEdit.setMinimumSize(QtCore.QSize(2, 0))
-        self.plainTextEdit.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.plainTextEdit.setObjectName("plainTextEdit")
+        sizePolicy.setHeightForWidth(self.plainviewer.sizePolicy().hasHeightForWidth())
+        self.plainviewer.setSizePolicy(sizePolicy)
+        self.plainviewer.setMinimumSize(QtCore.QSize(2, 0))
+        self.plainviewer.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.plainviewer.setObjectName("plainviewer")
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -154,4 +154,5 @@ class Ui_MainWindow(object):
         self.menu.setTitle(_translate("MainWindow", "文件"))
         self.menu_2.setTitle(_translate("MainWindow", "编辑"))
 
+        self.plainviewer.appendPlainText()
 

@@ -38,8 +38,7 @@ class Window(QWidget):
         animation2.setKeyValueAt(0.5, QPoint(50, 50))
         animation2.setKeyValueAt(0.75, QPoint(0, 50))
         animation2.setKeyValueAt(1, QPoint(50, 50))
-        animation2.setDuration(500)
-        animation2.start()
+
 
         # animation_group = QParallelAnimationGroup(self)
         # animation_group.addAnimation(animation1)
