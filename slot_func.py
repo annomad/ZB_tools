@@ -19,6 +19,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
         self.dir_model = QFileSystemModel(self)  # 实例化一个QfilesystemModel
+        self.filelistsview_model = QStandardItemModel()     # 定义一个直接显示文件的model
 
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
@@ -125,5 +126,27 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     #搜索 列举目标文件。
     def SearchList(self):
         pass
+        # 每次点击清空右边窗口数据
+        self.filelistsview_model.clear()
+        # 定义一个数组存储路径下的所有文件
+        AllFile_temp = []
+        # 获取双击后的指定路径
+        filePath = self.model01.filePath(Qmodelidx)
+        # List窗口文件赋值
+        FileListView = self.filelistsview_model.invisibleRootItem()
+        # 拿到文件夹下的所有文件
+        filelist = os.listdir(filePath)
+        # 进行将拿到的数据进行排序
+        filelist.sort()
+        # 遍历判断拿到的文件是文件夹还是文件，Flase为文件，True为文件夹
+        for Data in range(len(filelist)):
+            if os.path.isdir(filePath + '\\' + filelist[Data]) == False:
+                AllFile_temp.append(filelist[Data])
+            elif os.path.isdir(filePath + '\\' + filelist[Data]) == True:
+                print('2')
+        # 将拿到的所有文件放到数组中进行右边窗口赋值。
+        for got in range(len(AllFile_temp)):
+            gosData = QStandardItem(AllFile_temp[got])
+            FileListView.setChild(got, gosData)
 
 
