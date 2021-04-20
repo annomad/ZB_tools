@@ -91,12 +91,13 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             # self.dir_model.setNameFilters()
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
-        print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-        # print(self.dir_model.fileName(qmodel_index))  # 打印双击对象的文件名称，没有路径
-        # print(self.dir_model.fileInfo(qmodel_index))  # 打印双击对象的类型
-        if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
-            print('这是一个文件')
-            self.Docxviewer(self.dir_model.filePath(qmodel_index))
+        if self.dir_model.filePath(qmodel_index) == '':
+            print('这是一个空的鼠标')
+
+        # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+        # if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
+        #     print('这是一个文件')
+        #     self.Docxviewer(self.dir_model.filePath(qmodel_index))
 
     def research_func(self):  # 非空重搜索
         if self.search_lineedit.text() == '':
@@ -166,26 +167,28 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.filelistsview_model = QStandardItemModel(self)
         FileListview = self.filelistsview_model.invisibleRootItem()
         self.dir_treeView.setModel(self.filelistsview_model)
-        self.AllFile_temp = []
-        # self.AllFile_temp.append(self.search_file(self.dir_path, self.search_lineedit.text()))
-        self.search_file(self.dir_path, self.search_lineedit.text())
+        self.AllFile_temp = self.search_file(self.dir_path, self.search_lineedit.text())
+
+        print('测试All列表内容，', self.AllFile_temp)
 
         for got in range(len(self.AllFile_temp)):
             gosData = QStandardItem(self.AllFile_temp[got])
             FileListview.setChild(got, gosData)
 
-    def search_file(self, root, searchname):         #定义一个文件查找的功能
-        items = os.listdir(root)    # 把路径所有的目录和文件赋值给files
-        for item in items:      # 遍历目录或文件
-            path = os.path.join(root, item)
-            if os.path.isdir(path):
-                print('这是一个文件目录：' + item)
-                print('立即跟踪进入，调用函数本身')
-                return self.search_file(path, searchname)
-            elif os.path.isfile(path) and searchname in path:
-                print('发现一个目标文件', path)
-            else:
-                print(path, '不是我想要的')
+    def search_file(self, root, searchname):
+        fileListpath = []
+        fileslist = []
+        for top, dirs, nondirs in os.walk(root):
+            for item in nondirs:
+                if searchname in item:
+                    fileslist.append(item)
+                    # filesList.append(os.path.join(top, item))
+        return fileslist
+
+
+
+
+
 
 
 
