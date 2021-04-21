@@ -6,6 +6,9 @@ import docx
 
 
 class Slotfunc(MainWindow):  # 继承主窗口的类
+
+    progressBar_signal = pyqtSignal(int, int)  # 定义一个进度条的信号。
+
     def __init__(self):
         super().__init__()
 
@@ -13,13 +16,17 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # self.search_lineedit.textChanged.connect(self.searchbutton_func)  # 内容改变信号，链接搜索函数
         self.search_lineedit.editingFinished.connect(self.research_func)  # 结束编辑，重新展示函数
         self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
-        self.contextsearch_button.clicked.connect(self.Searchfilename_List)     #文件列表展示功能
+        self.contextsearch_button.clicked.connect(self.serch_inDir)     #文件列表展示功能
         self.dir_treeView.doubleClicked.connect(self.opendocs_func)  # 你编写打开doc文档功能
 
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
         self.dir_model = QFileSystemModel(self)  # 实例化一个QfilesystemModel
         self.filelistsview_model = QStandardItemModel()     # 定义一个直接显示文件的model
+
+        # 初始化界面
+        self.progressBar.hide()  #隐藏进度条
+        self.progressBar_signal.connect(self.pBar_view)
 
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
@@ -135,28 +142,47 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             print('这是个非docx文件')
 
     # 搜索 列举目标文件。
-    def Searchfilename_List(self):
+    def serch_inDir(self):
         # ------------------设置全文件的列表模式------------------------------------
         self.filelistsview_model = QStandardItemModel(self)
         FileListview = self.filelistsview_model.invisibleRootItem()
         self.dir_treeView.setModel(self.filelistsview_model)
-        self.AllFile_temp = self.search_file(self.dir_path, self.search_lineedit.text())
+        self.AllFile_temp = self.search_inFilelist(self.dir_path, self.search_lineedit.text())
 
-        print('测试All列表内容，', self.AllFile_temp)
+        # print('测试All列表内容，', self.AllFile_temp)
 
         for got in range(len(self.AllFile_temp)):
             gosData = QStandardItem(self.AllFile_temp[got])
             FileListview.setChild(got, gosData)
 
-    def search_file(self, root, searchname):
+    def search_inFilelist(self, root, searchname):
         fileList_path = []
         file_list = []
-        for top, dirs, nondirs in os.walk(root):
+        oswalk = os.walk(root)
+        total = len(list(os.walk(root)))
+        a = 0
+        for top, dirs, nondirs in oswalk:
             for item in nondirs:
                 if searchname in item:
-                    file_list.append(item)
-                    # filesList.append(os.path.join(top, item))
+                    # file_list.append(item)
+                    file_list.append(os.path.join(top, item))
+            a += 1
+            self.progressBar_signal.emit(a, total)
         return file_list
+
+    # -------------------------------------自定义跑马灯的信号---------------------------------
+    # -------------------------------------自定义跑马灯的信号---------------------------------
+    # -------------------------------------自定义跑马灯的信号---------------------------------
+    def pBar_view(self, a, total):
+        self.progressBar.show()
+        self.progressBar.setMaximum(total)
+        self.progressBar.setValue(a)
+        if a == total:
+            self.progressBar.hide()
+            self.progressBar.reset()
+
+
+
 
 
 
