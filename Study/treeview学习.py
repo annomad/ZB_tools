@@ -34,7 +34,8 @@ class App(QWidget):
         # 这里做展示
         self.tree = QTreeView()
         self.tree.setModel(self.model)
-        self.tree.setRootIndex(self.model.index(QDir.currentPath()))
+        # self.tree.setRootIndex(self.model.index(QDir.currentPath()))
+        self.tree.setRootIndex(self.model.index('g:\l'))
         self.tree.doubleClicked.connect(self.tree_cilcked)
         # 这里隐藏了目录信息展示
         for i in [1, 2, 3]:

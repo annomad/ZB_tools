@@ -155,4 +155,5 @@ class Ui_MainWindow(object):
         self.menu_2.setTitle(_translate("MainWindow", "编辑"))
 
         self.plainviewer.appendPlainText()
+        self.dir_treeView.setExpanded()
 
