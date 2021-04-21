@@ -1,7 +1,6 @@
 """这是一个槽函数集中营，继承了QT designer设计的ui，加入诸多的槽函数"""
 from MainWindow import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtCore import *
 import docx
 
@@ -16,7 +15,6 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
         self.contextsearch_button.clicked.connect(self.Searchfilename_List)     #文件列表展示功能
         self.dir_treeView.doubleClicked.connect(self.opendocs_func)  # 你编写打开doc文档功能
-
 
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
@@ -41,7 +39,6 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # 载入文件结构model
         self.load_dir_model()
 
-
     def load_dir_model(self):       # 加载文件目录结构的model功能
         if self.dir_path != '':
             self.dispay_dir_path.setText(self.dir_path)  # 路径显示label控件显示路径的名称
@@ -51,13 +48,13 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             # 进行 treeview 相关操作根目录、加载model，匹配索引
             self.dir_model.setRootPath(self.dir_path)  # 设置根目录
             self.dir_treeView.setModel(self.dir_model)  # 把设置好的目录model传递给treeview
-            self.dir_treeView.setRootIndex(self.dir_model.index(self.dir_path))  # 把目录索引传递给treeview索引。
+            self.dir_treeView.setRootIndex(self.dir_model.index(self.dir_path))  # 把目录索引传递给treeview索引，必须有！
             for i in [1, 2, 3]:
                 self.dir_treeView.setColumnHidden(i, True)
 
     # @pyqtSlot()
     def searchbutton_func(self):  # 搜索按钮功能键
-        self.load_dir_model()       #加载文件目录model
+        self.load_dir_model()       # 加载文件目录model
 
         self.Alert_animation(self.search_lineedit)  # 装在一个动画警示？
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
@@ -71,7 +68,6 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
                     self.search_lineedit.selectAll()  # 全选文本内容，方便下一次输入
                     self.search_lineedit.setFocus()
                     self.dir_model.setNameFilters(['*' + self.search_lineedit.text() + '*'])  # 搜索功能核心，设置名字过滤器
-                    # self.dir_model.setnam   # 设置非目标文件不可见。。
                 else:
                     print('警告：请输入制定的资料库文件')
                     a = QMessageBox.warning(self, '提示', '您还尚未打开任何资料库！\n\n现在是否选择一个资料库打开？',
@@ -91,13 +87,16 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             # self.dir_model.setNameFilters()
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
-        if self.dir_model.filePath(qmodel_index) == '':
-            print('这是一个空的鼠标')
+        try:
+            if not self.dir_model.filePath(qmodel_index) == '':
+                print('这是一个实心的鼠标')
+        except:
+            print('这是一个               空心的鼠标')
 
-        # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-        # if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
-        #     print('这是一个文件')
-        #     self.Docxviewer(self.dir_model.filePath(qmodel_index))
+        print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+        if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
+            print('这是一个文件')
+            self.Docxviewer(self.dir_model.filePath(qmodel_index))
 
     def research_func(self):  # 非空重搜索
         if self.search_lineedit.text() == '':
@@ -132,38 +131,12 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             for p in file.paragraphs:
                 print(p.text)
                 self.plainviewer.appendPlainText(p.text)  # 显示doc内容
-        except :
+        except:
             print('这是个非docx文件')
-
 
     # 搜索 列举目标文件。
     def Searchfilename_List(self):
-
-        # # 每次点击清空右边窗口数据
-        # self.filelistsview_model.clear()
-        # # 定义一个数组存储路径下的所有文件
-        # AllFile_temp = []
-        # # 获取双击后的指定路径
-        # filePath = self.dir_model.filePath(Qmodelidx)
-        # # List窗口文件赋值
-        # FileListView = self.filelistsview_model.invisibleRootItem()
-        # # 拿到文件夹下的所有文件
-        # FileDirlists = os.listdir(self.dir_path)
-        #
-        # # 进行将拿到的数据进行排序
-        # FileDirlists.sort()
-        # # 遍历判断拿到的文件是文件夹还是文件，Flase为文件，True为文件夹
-        # for Data in range(len(FileDirlists)):
-        #     if os.path.isdir(filePath + '\\' + FileDirlists[Data]) == False:
-        #         AllFile_temp.append(FileDirlists[Data])
-        #     elif os.path.isdir(filePath + '\\' + FileDirlists[Data]) == True:
-        #         print('2')
-        # # 将拿到的所有文件放到数组中进行右边窗口赋值。
-        # for got in range(len(AllFile_temp)):
-        #     gosData = QStandardItem(AllFile_temp[got])
-        #     FileListView.setChild(got, gosData)
-
-        #------------------设置全文件的列表模式---------------------------------------
+        # ------------------设置全文件的列表模式------------------------------------
         self.filelistsview_model = QStandardItemModel(self)
         FileListview = self.filelistsview_model.invisibleRootItem()
         self.dir_treeView.setModel(self.filelistsview_model)
@@ -176,14 +149,14 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             FileListview.setChild(got, gosData)
 
     def search_file(self, root, searchname):
-        fileListpath = []
-        fileslist = []
+        fileList_path = []
+        file_list = []
         for top, dirs, nondirs in os.walk(root):
             for item in nondirs:
                 if searchname in item:
-                    fileslist.append(item)
+                    file_list.append(item)
                     # filesList.append(os.path.join(top, item))
-        return fileslist
+        return file_list
 
 
 
