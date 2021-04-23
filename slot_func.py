@@ -2,7 +2,9 @@
 from MainWindow import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import threading
 import docx
+import time
 
 
 class Slotfunc(MainWindow):  # 继承主窗口的类
@@ -24,9 +26,8 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.dir_model = QFileSystemModel(self)  # 实例化一个QfilesystemModel
         self.filelistsview_model = QStandardItemModel()     # 定义一个直接显示文件的model
 
-        # 初始化界面
-        self.progressBar.hide()  #隐藏进度条
-        self.progressBar_signal.connect(self.pBar_view)
+
+        self.progressBar_signal.connect(self.pBar_view)  # 信号连接进度条
 
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
@@ -39,12 +40,16 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./","All Files (*);;Excel Files (*.xls)")
         # 设置文件扩展名过滤,注意用双分号间隔
         self.dir_path_temp = QFileDialog.getExistingDirectory(self, "选取文件夹", "./")  # 打开目录
-        #  判断下打开文件框被取消了
+        #  判断下打开文件被取消了
         if self.dir_path_temp:
             self.dir_path = self.dir_path_temp
 
         # 载入文件结构model
         self.load_dir_model()
+
+        # 开启多oswalk遍历目录的多线程，转换成list列表
+        self.oswalk = Oswalk_thread(self.dir_path)
+        self.oswalk_list = self.oswalk.get_oswalkList()
 
     def load_dir_model(self):       # 加载文件目录结构的model功能
         if self.dir_path != '':
@@ -90,6 +95,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
                         print('取消打开文件')
             except AttributeError:
                 pass
+
 
             # self.dir_model.setNameFilters()
 
@@ -155,24 +161,28 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             gosData = QStandardItem(self.AllFile_temp[got])
             FileListview.setChild(got, gosData)
 
+
     def search_inFilelist(self, root, searchname):
-        fileList_path = []
         file_list = []
-        oswalk = os.walk(root)
-        total = len(list(os.walk(root)))
-        a = 0
-        for top, dirs, nondirs in oswalk:
+        oswalk_list = []
+        #   定义进度条进度参数
+        current = 0
+
+        # oswalk_temp = os.walk(root)     #保存遍历文件->变量
+        # oswalk_list = list(oswalk_temp) #转换成list格式
+        # total = len(oswalk_list)    # 取得list长度 -> 给进度条赋值。
+        total = len(self.oswalk_list)
+        for top, dirs, nondirs in self.oswalk_list:
             for item in nondirs:
                 if searchname in item:
                     # file_list.append(item)
                     file_list.append(os.path.join(top, item))
-            a += 1
-            self.progressBar_signal.emit(a, total)
+            current += 1
+            self.progressBar_signal.emit(current, total)
         return file_list
 
-    # -------------------------------------自定义跑马灯的信号---------------------------------
-    # -------------------------------------自定义跑马灯的信号---------------------------------
-    # -------------------------------------自定义跑马灯的信号---------------------------------
+
+    # -------------------------------------自定义进度条功能---------------------------------
     def pBar_view(self, a, total):
         self.progressBar.show()
         self.progressBar.setMaximum(total)
@@ -184,7 +194,22 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
 
 
 
+#   ---------------------------------------------   线程   ————————————————————————————————————————————
+class Oswalk_thread(threading.Thread):
 
+
+    # oswalkFinished_signal = pyqtSignal(str)  # 创建一个信号
+
+    def __init__(self, root):   # 传参只能在init里，不能在run（）里穿参数，切记。
+        super().__init__()
+
+        self.root = root
+        self.result = list(os.walk(root))  # 遍历指定目录下文件结构，并转化成list
+
+    def get_oswalkList(self):
+        print('多线程启用')
+
+        return self.result
 
 
 

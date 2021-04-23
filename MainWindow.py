@@ -12,6 +12,9 @@ class MainWindow(QMainWindow):
         loadUi('MainWindow_Ui.ui', self)    #导入ui界面设计，传递给MainWindow。 继承了Qmainwindow。
         self.setWindowTitle('招投标制作工具')
 
+        # 初始化界面
+        self.progressBar.hide()  # 隐藏进度条
+
 
 
 class OpenDirWin(QDialog):
