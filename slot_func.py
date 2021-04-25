@@ -2,9 +2,9 @@
 from MainWindow import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import threading
+# import threading
 import docx
-import time
+# import time
 
 
 class Slotfunc(MainWindow):  # 继承主窗口的类
@@ -14,20 +14,24 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     def __init__(self):
         super().__init__()
 
-        self.search_lineedit.returnPressed.connect(self.searchbutton_func)  # 回车信号，链接搜索函数
-        # self.search_lineedit.textChanged.connect(self.searchbutton_func)  # 内容改变信号，链接搜索函数
-        self.search_lineedit.editingFinished.connect(self.research_func)  # 结束编辑，重新展示函数
-        self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
-        self.contextsearch_button.clicked.connect(self.serch_inDir)     #文件列表展示功能
-        self.dir_treeView.doubleClicked.connect(self.opendocs_func)  # 你编写打开doc文档功能
+
 
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
         self.dir_model = QFileSystemModel(self)  # 实例化一个QfilesystemModel
         self.filelistsview_model = QStandardItemModel()     # 定义一个直接显示文件的model
+        self.oswalk_QTHread = Oswalk_thread(self.dir_path)      # 定义一个线程
+        self.contextsearch_button.setEnabled(False)  # 内容搜索按钮暂时失效。
+
+        self.search_lineedit.returnPressed.connect(self.searchbutton_func)  # 回车信号，链接搜索函数
+        # self.search_lineedit.textChanged.connect(self.searchbutton_func)  # 内容改变信号，链接搜索函数
+        self.search_lineedit.editingFinished.connect(self.research_func)  # 结束编辑，重新展示函数
+        self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
+        self.contextsearch_button.clicked.connect(self.serch_inDir)  # 文件列表展示功能
+        self.dir_treeView.doubleClicked.connect(self.opendocs_func)  # 你编写打开doc文档功能
+        self.progressBar_signal.connect(self.pBar_view)  # 进度条信号绑定槽函数
 
 
-        self.progressBar_signal.connect(self.pBar_view)  # 信号连接进度条
 
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
@@ -44,12 +48,14 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         if self.dir_path_temp:
             self.dir_path = self.dir_path_temp
 
-        # 载入文件结构model
-        self.load_dir_model()
+            # 载入文件结构model
+            self.load_dir_model()
 
-        # 开启多oswalk遍历目录的多线程，转换成list列表
-        self.oswalk = Oswalk_thread(self.dir_path)
-        self.oswalk_list = self.oswalk.get_oswalkList()
+            # 定义一个线程Oswalk的线程
+            self.oswalk_QTHread = Oswalk_thread(self.dir_path)  # 创建一个多线程的实例.
+            self.oswalk_QTHread.oswalkFinished_signal.connect(self.receivesignal_oswalkFunc)  # THread现场信号连接函数
+            self.oswalk_QTHread.start()
+            self.contextsearch_button.setEnabled(False)  # 内容搜索暂时失效。
 
     def load_dir_model(self):       # 加载文件目录结构的model功能
         if self.dir_path != '':
@@ -104,7 +110,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             if not self.dir_model.filePath(qmodel_index) == '':
                 print('这是一个实心的鼠标')
         except:
-            print('这是一个               空心的鼠标')
+            print('这是一个     空心的鼠标')
 
         print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
         if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
@@ -153,34 +159,35 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.filelistsview_model = QStandardItemModel(self)
         FileListview = self.filelistsview_model.invisibleRootItem()
         self.dir_treeView.setModel(self.filelistsview_model)
-        self.AllFile_temp = self.search_inFilelist(self.dir_path, self.search_lineedit.text())
+        self.AllFile_temp = self.search_inFilelist(self.search_lineedit.text())
 
-        # print('测试All列表内容，', self.AllFile_temp)
+        print('测试All列表内容，', self.AllFile_temp)
 
         for got in range(len(self.AllFile_temp)):
             gosData = QStandardItem(self.AllFile_temp[got])
             FileListview.setChild(got, gosData)
 
 
-    def search_inFilelist(self, root, searchname):
+    def search_inFilelist(self, searchname):
         file_list = []
         oswalk_list = []
         #   定义进度条进度参数
         current = 0
-
-        # oswalk_temp = os.walk(root)     #保存遍历文件->变量
-        # oswalk_list = list(oswalk_temp) #转换成list格式
-        # total = len(oswalk_list)    # 取得list长度 -> 给进度条赋值。
-        total = len(self.oswalk_list)
-        for top, dirs, nondirs in self.oswalk_list:
-            for item in nondirs:
-                if searchname in item:
-                    # file_list.append(item)
-                    file_list.append(os.path.join(top, item))
-            current += 1
-            self.progressBar_signal.emit(current, total)
-        return file_list
-
+        try:
+            total = len(self.oswalk_list)
+            for top, dirs, nondirs in self.oswalk_list:
+                for item in nondirs:
+                    if searchname in item:
+                        # file_list.append(item)
+                        file_list.append(os.path.join(top, item))
+                current += 1
+                self.progressBar_signal.emit(current, total)
+            return file_list
+        except:
+            QMessageBox.warning(self, '提示', '正在加载中，请稍后！')
+            print('正在递归')
+            # time.sleep(1)
+            return self.search_inFilelist(searchname)
 
     # -------------------------------------自定义进度条功能---------------------------------
     def pBar_view(self, a, total):
@@ -191,25 +198,35 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             self.progressBar.hide()
             self.progressBar.reset()
 
+    def receivesignal_oswalkFunc(self, oswalk):     # 接受QThread信号
+        self.oswalk_list = oswalk
+        self.contextsearch_button.setEnabled(True)  # 设置内容搜索按钮可用
 
+
+        print('QTHread正在运行中，尝试返回:')
 
 
 #   ---------------------------------------------   线程   ————————————————————————————————————————————
-class Oswalk_thread(threading.Thread):
+#   ---------------------------------------------   线程   ————————————————————————————————————————————
 
+class Oswalk_thread(QThread):
 
-    # oswalkFinished_signal = pyqtSignal(str)  # 创建一个信号
+    oswalkFinished_signal = pyqtSignal(list)     # 创建一个信号
 
     def __init__(self, root):   # 传参只能在init里，不能在run（）里穿参数，切记。
         super().__init__()
 
         self.root = root
-        self.result = list(os.walk(root))  # 遍历指定目录下文件结构，并转化成list
 
-    def get_oswalkList(self):
-        print('多线程启用')
+    def run(self):
+        self.result = list(os.walk(self.root))  # 遍历指定目录下文件结构，并转化成list
 
-        return self.result
+        self.oswalkFinished_signal.emit(self.result)     # 发射oswalk的list数据
+
+
+
+
+
 
 
 
