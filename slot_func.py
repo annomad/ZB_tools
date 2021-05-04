@@ -20,7 +20,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.dir_path = ''  # 初始化资料库目录变量
         self.dir_model = QFileSystemModel(self)  # 实例化一个QfilesystemModel
         self.filelistsview_model = QStandardItemModel()     # 定义一个直接显示文件的model
-        self.oswalk_QTHread = Oswalk_thread(self.dir_path)      # 定义一个线程
+        self.oswalkThread = Oswalk_thread(self.dir_path)      # 定义一个线程
         self.contextsearch_button.setEnabled(False)  # 内容搜索按钮暂时失效。
 
         self.search_lineedit.returnPressed.connect(self.searchbutton_func)  # 回车信号，链接搜索函数
@@ -52,10 +52,12 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             self.load_dir_model()
 
             # 定义一个线程Oswalk的线程
-            self.oswalk_QTHread = Oswalk_thread(self.dir_path)  # 创建一个多线程的实例.
-            self.oswalk_QTHread.oswalkFinished_signal.connect(self.receivesignal_oswalkFunc)  # THread现场信号连接函数
-            self.oswalk_QTHread.start()
+            self.oswalkThread = Oswalk_thread(self.dir_path)  # 创建一个多线程的实例.
+            self.oswalkThread.oswalkFinished_signal.connect(self.receivesignal_oswalkFunc)  # THread现场信号连接函数
+            self.oswalkThread.start()
+            print('启动线程')
             self.contextsearch_button.setEnabled(False)  # 内容搜索暂时失效。
+            self.contextsearch_button.setText('扫描中')
 
     def load_dir_model(self):       # 加载文件目录结构的model功能
         if self.dir_path != '':
@@ -77,7 +79,6 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.Alert_animation(self.search_lineedit)  # 装在一个动画警示？
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
         self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
-        # self.research_func()    # 先检查下搜索框是否是空值，如果是空值，则禁用名称过滤  有待商榷？
         self.dir_model.setNameFilterDisables(False)  # 如果是Ture，则显示灰色的非目标，False直接隐藏
         if self.search_lineedit.text() != '':
             try:
@@ -107,15 +108,19 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
         try:
-            if not self.dir_model.filePath(qmodel_index) == '':
+            if self.dir_model.filePath(qmodel_index):
                 print('这是一个实心的鼠标')
+                print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+                if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
+                    print('这是一个文件')
+                    self.Docxviewer(self.dir_model.filePath(qmodel_index))
+            else:
+                print('这里看看能否做点文章')
+                # self.Docxviewer(self.dir_model.filePath(qmodel_index))
+
         except:
             print('这是一个     空心的鼠标')
 
-        print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-        if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
-            print('这是一个文件')
-            self.Docxviewer(self.dir_model.filePath(qmodel_index))
 
     def research_func(self):  # 非空重搜索
         if self.search_lineedit.text() == '':
@@ -148,7 +153,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             file = docx.Document(filepath)
             self.plainviewer.clear()    # 清空文本
             for p in file.paragraphs:
-                print(p.text)
+                # print(p.text)
                 self.plainviewer.appendPlainText(p.text)  # 显示doc内容
         except:
             print('这是个非docx文件')
@@ -159,18 +164,20 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.filelistsview_model = QStandardItemModel(self)
         FileListview = self.filelistsview_model.invisibleRootItem()
         self.dir_treeView.setModel(self.filelistsview_model)
-        self.AllFile_temp = self.search_inFilelist(self.search_lineedit.text())
+        self.AllFile_wantted = self.search_inFilelist(self.search_lineedit.text())
 
-        print('测试All列表内容，', self.AllFile_temp)
+        # print('测试All列表内容，', AllFile_temp)
+        Allfile_list = list(self.AllFile_wantted.keys())
 
-        for got in range(len(self.AllFile_temp)):
-            gosData = QStandardItem(self.AllFile_temp[got])
+        for got in range(len(Allfile_list)):
+            gosData = QStandardItem(Allfile_list[got])
             FileListview.setChild(got, gosData)
 
-
+    # 在文件列表中搜索目标文件
     def search_inFilelist(self, searchname):
         file_list = []
         oswalk_list = []
+        file_dict = {}
         #   定义进度条进度参数
         current = 0
         try:
@@ -178,11 +185,13 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             for top, dirs, nondirs in self.oswalk_list:
                 for item in nondirs:
                     if searchname in item:
-                        # file_list.append(item)
-                        file_list.append(os.path.join(top, item))
+                        file_dict[item] = os.path.join(top, item)       # 增加字典
+                        #  file_name.append(item)
+                        # file_list.append(os.path.join(top, item))
                 current += 1
                 self.progressBar_signal.emit(current, total)
-            return file_list
+            # return file_list
+            return file_dict
         except:
             QMessageBox.warning(self, '提示', '正在加载中，请稍后！')
             print('正在递归')
@@ -201,9 +210,8 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
     def receivesignal_oswalkFunc(self, oswalk):     # 接受QThread信号
         self.oswalk_list = oswalk
         self.contextsearch_button.setEnabled(True)  # 设置内容搜索按钮可用
-
-
-        print('QTHread正在运行中，尝试返回:')
+        self.contextsearch_button.setText('内容')  # 设置内容搜索按钮可用
+        print('QTHread结果已经通过信号接受，并赋值了:')
 
 
 #   ---------------------------------------------   线程   ————————————————————————————————————————————
