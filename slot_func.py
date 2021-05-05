@@ -1,11 +1,12 @@
-"""这是一个槽函数集中营，继承了QT designer设计的ui，加入诸多的槽函数"""
+
 from MainWindow import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-# import threading
+import os
 import docx
-# import time
 
+"""这是一个槽函数集中营，继承了QT designer设计的ui，加入诸多的槽函数"""
+"""这是功能函数集中营"""
 
 class Slotfunc(MainWindow):  # 继承主窗口的类
 
@@ -107,19 +108,20 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             # self.dir_model.setNameFilters()
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
-        try:
-            if self.dir_model.filePath(qmodel_index):
-                print('这是一个实心的鼠标')
-                print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-                if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
-                    print('这是一个文件')
-                    self.Docxviewer(self.dir_model.filePath(qmodel_index))
-            else:
-                print('这里看看能否做点文章')
-                # self.Docxviewer(self.dir_model.filePath(qmodel_index))
 
-        except:
-            print('这是一个     空心的鼠标')
+        if self.dir_model.filePath(qmodel_index):
+            print('这是一个实心的鼠标')
+            # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+            if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
+                print('这是一个文件')
+                self.Docxviewer(self.dir_model.filePath(qmodel_index))
+        else:
+            print('这里看看能否做点文章')
+            # self.Docxviewer(self.dir_model.filePath(qmodel_index))
+
+
+        print('这是一个空心的鼠标')
+
 
 
     def research_func(self):  # 非空重搜索
@@ -128,24 +130,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             self.dir_model.setNameFilters([])
         pass  # 拟开启资料库搜索功能
 
-    def Alert_animation(self, kongjian):  # 做一个警示动画类，做一些重要的提醒
-        x = kongjian.geometry().x()     # 获得坐标和y值
-        y = kongjian.geometry().y()     # 获得坐标和y值
-        w = kongjian.geometry().width()     # 获得坐标和w值
-        h = kongjian.geometry().height()        # 获得坐标和h值
-        print("输出x坐标为 ,y坐标为d", x, y)
-        animation1 = QPropertyAnimation(kongjian, b'geometry', self)    # geometry是坐标+大小，pos是坐标
-        animation1.setKeyValueAt(0, QRect(x+0, y, w, h))    # 此处有bug ， 第二次执行会让变量增加。
-        animation1.setKeyValueAt(0.2, QRect(x-10, y, w, h))
-        animation1.setKeyValueAt(0.4, QRect(x+10, y, w, h))
-        animation1.setKeyValueAt(0.65, QRect(x-10, y, w, h))
-        animation1.setKeyValueAt(0.80, QRect(x+10, y, w, h))
-        animation1.setKeyValueAt(0.90, QRect(x-10, y, w, h))
-        animation1.setKeyValueAt(0.95, QRect(x+10, y, w, h))
-        animation1.setKeyValueAt(1, QRect(x, y, w, h))
-        animation1.setDuration(300)  # 设置间隔
-        animation1.setLoopCount(2)  # 重复3次
-        animation1.start(QAbstractAnimation.DeleteWhenStopped)       # 动画完毕后删除动画
+
 
         # 这是docx展示的功能：右侧大框里显示内容的功能
     def Docxviewer(self, filepath):
