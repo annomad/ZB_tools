@@ -1,9 +1,13 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, QDir, QFile, QIODevice, QTextStream
+import logging
 
 
 if __name__ == '__main__':
+
+ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+ logging.debug('Start of programe')
 
  app = QApplication(sys.argv)  # 定义个程序app，用于申请硬件系统资源
  #  思路直接用loadUi形成窗口类MainWindow（），在用slotfunc（）继承MainWindow（）类，并改写。

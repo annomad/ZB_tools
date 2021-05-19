@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os
 import docx
+import logging
+
 
 """这是一个槽函数集中营，继承了QT designer设计的ui，加入诸多的槽函数"""
 """这是功能函数集中营"""
@@ -11,6 +13,7 @@ import docx
 class Slotfunc(MainWindow):  # 继承主窗口的类
 
     progressBar_signal = pyqtSignal(int, int)  # 定义一个进度条的信号。
+
 
     def __init__(self):
         super().__init__()
@@ -52,7 +55,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             # 载入文件结构model
             self.load_dir_model()
 
-            # 定义一个线程Oswalk的线程
+            # 实例化一个线程Oswalk的线程
             self.oswalkThread = Oswalk_thread(self.dir_path)  # 创建一个多线程的实例.
             self.oswalkThread.oswalkFinished_signal.connect(self.receivesignal_oswalkFunc)  # THread现场信号连接函数
             self.oswalkThread.start()
@@ -108,19 +111,18 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             # self.dir_model.setNameFilters()
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
-
-        if self.dir_model.filePath(qmodel_index):
-            print('这是一个实心的鼠标')
-            # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-            if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
-                print('这是一个文件')
-                self.Docxviewer(self.dir_model.filePath(qmodel_index))
-        else:
-            print('这里看看能否做点文章')
-            # self.Docxviewer(self.dir_model.filePath(qmodel_index))
-
-
-        print('这是一个空心的鼠标')
+        try:
+            if self.dir_model.filePath(qmodel_index):
+                logging.debug('有效的鼠标点击')
+                # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+                if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
+                    print('这是一个文件')
+                    self.Docxviewer(self.dir_model.filePath(qmodel_index))
+            else:
+                print('这里看看能否做点文章')
+                # self.Docxviewer(self.dir_model.filePath(qmodel_index))
+        except:
+            logging.debug('这个无法返回文本卢金')
 
 
 
@@ -179,8 +181,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             return file_dict
         except:
             QMessageBox.warning(self, '提示', '正在加载中，请稍后！')
-            print('正在递归')
-            # time.sleep(1)
+            logging.debug('正在递归')
             return self.search_inFilelist(searchname)
 
     # -------------------------------------自定义进度条功能---------------------------------
@@ -212,9 +213,9 @@ class Oswalk_thread(QThread):
         self.root = root
 
     def run(self):
-        self.result = list(os.walk(self.root))  # 遍历指定目录下文件结构，并转化成list
+        result = list(os.walk(self.root))  # 遍历指定目录下文件结构，并转化成list
 
-        self.oswalkFinished_signal.emit(self.result)     # 发射oswalk的list数据
+        self.oswalkFinished_signal.emit(result)     # 发射oswalk的list数据
 
 
 
