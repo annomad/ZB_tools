@@ -2,20 +2,25 @@
 from MainWindow import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtCore import pyqtSlot
 import os
 import docx
 import logging
 
 
+
+
 """这是一个槽函数集中营，继承了QT designer设计的ui，加入诸多的槽函数"""
 """这是功能函数集中营"""
+
 
 class Slotfunc(MainWindow):  # 继承主窗口的类
 
     progressBar_signal = pyqtSignal(int, int)  # 定义一个进度条的信号。
 
     def __init__(self):
-        super(Slotfunc, self).__init__()
+        super().__init__()
+
 
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
@@ -28,31 +33,29 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         # self.search_lineedit.textChanged.connect(self.searchbutton_func)  # 内容改变信号，链接搜索函数
         self.search_lineedit.editingFinished.connect(self.research_func)  # 结束编辑，重新展示函数
         self.searchbutton.clicked.connect(self.searchbutton_func)  # 绑定搜索按键功能
-        self.contextsearch_button.clicked.connect(self.serch_inDir)  # 文件列表展示功能
+        self.contextsearch_button.clicked.connect(self.search_inDir)  # 文件列表展示功能
         self.dir_treeView.doubleClicked.connect(self.opendocs_func)  # 你编写打开doc文档功能
         self.progressBar_signal.connect(self.pBar_view)  # 进度条信号绑定槽函数
-
-
 
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
     # ##################################        函数区    ###############################
 
     # 自动绑定信号和槽函数，点击"打开资料库"打开目录选择窗口
+
     @pyqtSlot()
     def on_openResource_clicked(self):  # 打开资源库按钮
-
         # fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./","All Files (*);;Excel Files (*.xls)")
         # 设置文件扩展名过滤,注意用双分号间隔
-        self.dir_path_temp = QFileDialog.getExistingDirectory(self, "选取文件夹", "./")  # 打开目录
+        dir_path_temp = QFileDialog.getExistingDirectory(self, "选取文件夹", "./")  # 打开目录
         #  判断下打开文件被取消了
-        if self.dir_path_temp:
-            self.dir_path = self.dir_path_temp
+        if dir_path_temp:
+            self.dir_path = dir_path_temp
 
             # 载入文件结构model
             self.load_dir_model()
 
-            # 实例化一个线程Oswalk的线程
+            # 实例化一个线程oswalk的线程
             self.oswalkThread = Oswalk_thread(self.dir_path)  # 创建一个多线程的实例.
             self.oswalkThread.oswalkFinished_signal.connect(self.receivesignal_oswalkFunc)  # THread现场信号连接函数
             self.oswalkThread.start()
@@ -65,7 +68,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             self.dispay_dir_path.setText(self.dir_path)  # 路径显示label控件显示路径的名称
             self.dispay_dir_path.setToolTip(self.dir_path)  # 提示路径绝对路径，（宽度会影响label显示，另加一个提示）
             # # 进行筛选只显示文件夹，不显示文件和特色文件
-            # dir_model.setFilter(QtCore.QDir.Dirs | QtCore.QDir.NoDotAndDotDot)
+            self.dir_model.setFilter(QDir.AllEntries | QDir.NoDotAndDotDot | QDir.Files)      #QDir.Dirs | QDir.NoDotAndDotDot
             # 进行 treeview 相关操作根目录、加载model，匹配索引
             self.dir_model.setRootPath(self.dir_path)  # 设置根目录
             self.dir_treeView.setModel(self.dir_model)  # 把设置好的目录model传递给treeview
@@ -81,7 +84,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
         self.search_lineedit.setToolTip('拟增加正则re表达式查询功能')
         self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
         self.dir_model.setNameFilterDisables(False)  # 如果是Ture，则显示灰色的非目标，False直接隐藏
-        if self.search_lineedit.text() != '':
+        if self.search_lineedit.text():
             try:
                 if self.dir_path != '':
                     print('你搜索框输入的是：' + self.search_lineedit.text())
@@ -105,29 +108,26 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
                 logging.debug('这是打开一个错误的文件路径')
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
-    # try:
-        filepath = self.dir_model.filePath((qmodel_index))
-        if filepath:
-            logging.debug('有效的鼠标点击')
-            # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-            if not filepath.isDir():  # 如果不是目录，则告知这是一个文件
-                print('这是一个文件')
-                self.Docxviewer(filepath)
-        else:
-            print('这里看看能否做点文章')
-            # self.Docxviewer(self.dir_model.filePath(qmodel_index))
-    # except:
-        logging.debug('这个无法返回文本路径')
-
-
+        try:
+            filepath = self.dir_model.filePath(qmodel_index)
+        except:
+            logging.debug('这个无法返回文本路径')
+        finally:
+            if filepath:
+                logging.debug('有效的鼠标点击')
+                # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+                if os.path.isfile(filepath):  # 如果不是目录，则告知这是一个文件
+                    print('这是一个文件')
+                    self.Docxviewer(filepath)
+            else:
+                print('这里看看能否做点文章')
+                # self.Docxviewer(self.dir_model.filePath(qmodel_index))
 
     def research_func(self):  # 非空重搜索
         if self.search_lineedit.text() == '':
             self.search_lineedit.setStyleSheet('border: none; background: none')  # 设置背景色
             self.dir_model.setNameFilters([])
         pass  # 拟开启资料库搜索功能
-
-
 
         # 这是docx展示的功能：右侧大框里显示内容的功能
     def Docxviewer(self, filepath):
@@ -141,7 +141,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             print('这是个非docx文件')
 
     # 搜索 列举目标文件。
-    def serch_inDir(self):
+    def search_inDir(self):
         # ------------------设置全文件的列表模式------------------------------------
         self.filelistsview_model = QStandardItemModel(self)
         FileListview = self.filelistsview_model.invisibleRootItem()

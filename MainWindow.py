@@ -1,15 +1,18 @@
-from PyQt5.uic import loadUi
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import *
+from PyQt5.uic import loadUi
 # import sys
 # import os
 # from PyQt5 import QtCore
 """这个才是主界面的设计窗口，包括ui定义，以及其他美化的东西"""
+
+
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         loadUi('MainWindow_Ui.ui', self)    #导入ui界面设计，传递给MainWindow。 继承了Qmainwindow。
         self.setWindowTitle('招投标制作工具')
+
 
         # 初始化界面
         self.progressBar.hide()  # 隐藏进度条
@@ -20,7 +23,6 @@ class MainWindow(QMainWindow):
         y = kongjian.geometry().y()  # 获得坐标和y值
         w = kongjian.geometry().width()  # 获得坐标和w值
         h = kongjian.geometry().height()  # 获得坐标和h值
-        print("输出x坐标为 ,y坐标为d", x, y)
         animation1 = QPropertyAnimation(kongjian, b'geometry', self)  # geometry是坐标+大小，pos是坐标
         animation1.setKeyValueAt(0, QRect(x + 0, y, w, h))  # 此处有bug ， 第二次执行会让变量增加。
         animation1.setKeyValueAt(0.2, QRect(x - 10, y, w, h))
@@ -31,7 +33,7 @@ class MainWindow(QMainWindow):
         animation1.setKeyValueAt(0.95, QRect(x + 10, y, w, h))
         animation1.setKeyValueAt(1, QRect(x, y, w, h))
         animation1.setDuration(300)  # 设置间隔
-        animation1.setLoopCount(2)  # 重复3次
+        animation1.setLoopCount(1)  # 重复3次
         animation1.start(QAbstractAnimation.DeleteWhenStopped)  # 动画完毕后删除动画
 
 
