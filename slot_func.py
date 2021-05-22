@@ -14,11 +14,8 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
 
     progressBar_signal = pyqtSignal(int, int)  # 定义一个进度条的信号。
 
-
     def __init__(self):
-        super().__init__()
-
-
+        super(Slotfunc, self).__init__()
 
         # 初始化变量
         self.dir_path = ''  # 初始化资料库目录变量
@@ -59,7 +56,7 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
             self.oswalkThread = Oswalk_thread(self.dir_path)  # 创建一个多线程的实例.
             self.oswalkThread.oswalkFinished_signal.connect(self.receivesignal_oswalkFunc)  # THread现场信号连接函数
             self.oswalkThread.start()
-            print('启动线程')
+            logging.debug('准备启动多线程')
             self.contextsearch_button.setEnabled(False)  # 内容搜索暂时失效。
             self.contextsearch_button.setText('扫描中')
 
@@ -105,24 +102,22 @@ class Slotfunc(MainWindow):  # 继承主窗口的类
                     else:
                         print('取消打开文件')
             except AttributeError:
-                pass
-
-
-            # self.dir_model.setNameFilters()
+                logging.debug('这是打开一个错误的文件路径')
 
     def opendocs_func(self, qmodel_index):  # 定义treeview列表单元双击功能
-        try:
-            if self.dir_model.filePath(qmodel_index):
-                logging.debug('有效的鼠标点击')
-                # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
-                if not self.dir_model.fileInfo(qmodel_index).isDir():  # 如果不是目录，则告知这是一个文件
-                    print('这是一个文件')
-                    self.Docxviewer(self.dir_model.filePath(qmodel_index))
-            else:
-                print('这里看看能否做点文章')
-                # self.Docxviewer(self.dir_model.filePath(qmodel_index))
-        except:
-            logging.debug('这个无法返回文本卢金')
+    # try:
+        filepath = self.dir_model.filePath((qmodel_index))
+        if filepath:
+            logging.debug('有效的鼠标点击')
+            # print(self.dir_model.filePath(qmodel_index))  # 传递 双击对象的的绝对路径
+            if not filepath.isDir():  # 如果不是目录，则告知这是一个文件
+                print('这是一个文件')
+                self.Docxviewer(filepath)
+        else:
+            print('这里看看能否做点文章')
+            # self.Docxviewer(self.dir_model.filePath(qmodel_index))
+    # except:
+        logging.debug('这个无法返回文本路径')
 
 
 
@@ -209,13 +204,14 @@ class Oswalk_thread(QThread):
 
     def __init__(self, root):   # 传参只能在init里，不能在run（）里穿参数，切记。
         super().__init__()
-
         self.root = root
 
     def run(self):
+        logging.debug('oswalk线程开始工作')
         result = list(os.walk(self.root))  # 遍历指定目录下文件结构，并转化成list
 
         self.oswalkFinished_signal.emit(result)     # 发射oswalk的list数据
+        logging.debug('多线程运行完毕')
 
 
 
