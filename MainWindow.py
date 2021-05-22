@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import *
 # from PyQt5 import QtCore
 """这个才是主界面的设计窗口，包括ui定义，以及其他美化的东西"""
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         loadUi('MainWindow_Ui.ui', self)    #导入ui界面设计，传递给MainWindow。 继承了Qmainwindow。
         self.setWindowTitle('招投标制作工具')
 

@@ -14,7 +14,6 @@ if __name__ == '__main__':
  #  这样的好处就是把槽函数和Ui函数分开。
 
  from slot_func import Slotfunc
-
  mywindow = Slotfunc()  # 以按键为线索的类给他实例化
  mywindow.show()
  sys.exit(app.exec())   # 惯例写法，让程序循环。
